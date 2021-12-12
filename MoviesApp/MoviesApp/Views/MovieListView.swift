@@ -8,16 +8,12 @@
 import SwiftUI
 
 struct MovieListView: View {
-    // TODO: Change hardcoded data
-    var movieSummaries: [MovieSummary] = [
-        MovieSummary(id: 0, title: "Movie 1", image: "image", budget: 5000),
-        MovieSummary(id: 1, title: "Movie 2", image: "image", budget: 6000)
-    ]
     @State private var searchText = ""
+    @InjectedObject private var viewModel: BaseMovieListViewModel
     
     var body: some View {
         NavigationView {
-            List(movieSummaries) { summary in
+            List(viewModel.movieSummaries) { summary in
                 MovieListRow(summary: summary)
                     .listRowSeparator(.hidden)
                     .listSectionSeparator(.hidden)
@@ -27,8 +23,8 @@ struct MovieListView: View {
         }
         .searchable(text: $searchText)
         .onChange(of: searchText) { searchText in
-            // TODO: implement searching
             print(searchText)
+            viewModel.searchText.send(searchText)
         }
     }
 }

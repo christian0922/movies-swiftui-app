@@ -8,7 +8,7 @@
 import Foundation
 import RxSwift
 
-struct MovieSummary: Identifiable {
+struct MovieSummary: Codable, Identifiable {
     var id: Int
     let title: String
     let image: String

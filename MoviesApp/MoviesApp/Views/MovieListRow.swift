@@ -40,7 +40,7 @@ struct MovieListRow: View {
         .cornerRadius(10)
         .listRowBackground(Color.clear)
         // TODO: Change hardcoded data
-        .background(NavigationLink("", destination: MovieDetailsView(details: MovieDetails(title: "Title", overview: "Overview", releaseDate: "Release date", backdrop: "image"))).opacity(0) )
+        .background(NavigationLink("", destination: MovieDetailsView()))
     }
 }
 
