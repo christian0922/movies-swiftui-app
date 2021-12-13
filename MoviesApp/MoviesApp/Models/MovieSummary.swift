@@ -6,13 +6,13 @@
 //
 
 import Foundation
-import RxSwift
 
 struct MovieSummary: Codable, Identifiable {
-    var id: Int
-    let title: String
-    let image: String
-    let budget: Int
+    let id: Int
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+    }
 }
 
 

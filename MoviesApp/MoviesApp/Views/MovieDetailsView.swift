@@ -8,18 +8,23 @@
 import SwiftUI
 
 struct MovieDetailsView: View {
-    @InjectedObject var viewModel: BaseMovieDetailsViewModel
+    @State var details: MovieDetails
     var body: some View {
         VStack(alignment: .leading) {
-            Image(viewModel.movieDetails.backdrop)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            AsyncImage(url: details.backdropUrl) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } placeholder: {
+                Color.clear
+            }
             VStack(alignment: .leading) {
-                Text(viewModel.movieDetails.title)
+                Text(details.title)
                     .font(.title)
-                Text(viewModel.movieDetails.releaseDate)
+                Text(details.releaseDateString)
                     .font(.caption)
-                Text(viewModel.movieDetails.overview)
+                    .padding([.bottom])
+                Text(details.overview)
                     .font(.body)
             }
             .padding()
@@ -37,6 +42,6 @@ struct MovieDetailsView: View {
 
 struct MovieDetailsView_Previews: PreviewProvider {
     static var previews: some View {
-        MovieDetailsView()
+        MovieDetailsView(details: MovieDetails(id: 0, title: "title", budget: 5000, overview: "overview", releaseDate: "releaseDate", backdropPath: nil, posterPath: nil))
     }
 }

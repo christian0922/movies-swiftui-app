@@ -10,25 +10,48 @@ import Combine
 import Moya
 
 class BaseMovieListViewModel: ObservableObject {
-    @Published var movieSummaries: [MovieSummary] = []
+    @Published var movies: [MovieDetails] = []
+    @Published var hasError: Bool = false
     var searchText = PassthroughSubject<String, Never>()
 }
 
 class MovieListViewModel: BaseMovieListViewModel {
     var cancellables = Set<AnyCancellable>()
+    @Injected var moviesService: MoviesServiceProtocol
+
     override init() {
         super.init()
-        self.movieSummaries = [
-            MovieSummary(id: 0, title: "title1", image: "image", budget: 5000),
-            MovieSummary(id: 1, title: "title2", image: "image", budget: 6000)
-        ]
-        
-        self.searchText.sink { _ in
-            self.movieSummaries = [
-                MovieSummary(id: 0, title: "title1", image: "image", budget: 5000),
-                MovieSummary(id: 1, title: "title2", image: "image", budget: 6000),
-                MovieSummary(id: 2, title: "title3", image: "image", budget: 6000)
-            ]
-        }.store(in: &cancellables)
+        self.searchText.filter {
+            $0 != ""
+        }.flatMap { searchText in
+            self.moviesService.searchMovies(query: searchText)
+        }
+        .sink(receiveCompletion: { [weak self] completion in
+            guard let self = self, case let .failure(error) = completion else { return }
+            self.hasError = true
+            print(error)
+        }, receiveValue: { [weak self] response in
+            guard let self = self else { return }
+            self.hasError = false
+            self.movies = []
+            response.results.forEach {
+                self.getMovieDetails(id: $0.id)
+            }
+        }).store(in: &cancellables)
+    }
+    
+    func getMovieDetails(id: Int) {
+        self.moviesService
+            .getMovieDetails(id: id)
+            .sink(receiveCompletion: { [weak self] completion in
+                guard let self = self, case let .failure(error) = completion else { return }
+                self.hasError = true
+                print(error)
+            }, receiveValue: { [weak self] response in
+                guard let self = self else { return }
+                self.hasError = false
+                self.movies.append(response)
+                print(response.budget)
+            }).store(in: &cancellables)
     }
 }

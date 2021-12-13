@@ -13,18 +13,54 @@ struct MovieListView: View {
     
     var body: some View {
         NavigationView {
-            List(viewModel.movieSummaries) { summary in
-                MovieListRow(summary: summary)
-                    .listRowSeparator(.hidden)
-                    .listSectionSeparator(.hidden)
-            }
-            .listStyle(.plain)
-            .navigationTitle("Search in movies")
+            contentView
+                .navigationTitle("Searching in movies")
         }
         .searchable(text: $searchText)
         .onChange(of: searchText) { searchText in
-            print(searchText)
             viewModel.searchText.send(searchText)
+        }
+    }
+    
+    var contentView: some View {
+        if viewModel.hasError {
+            return AnyView(errorView)
+        } else if viewModel.movies.count > 0, searchText != "" {
+            return AnyView(listView)
+        } else if searchText == "" {
+            return AnyView(emptySearchView)
+        } else {
+            return AnyView(emptyView)
+        }
+    }
+    
+    var listView: some View {
+        List(viewModel.movies) { details in
+            MovieListRow(details: details)
+                .listRowSeparator(.hidden)
+                .listSectionSeparator(.hidden)
+        }
+        .listStyle(.plain)
+    }
+    
+    var emptySearchView: some View {
+        VStack(alignment: .leading) {
+            Text("Type a movie name for searching")
+                .font(.callout)
+        }
+    }
+    
+    var emptyView: some View {
+        VStack(alignment: .leading) {
+            Text("Movies not found for this search condition")
+                .font(.callout)
+        }
+    }
+    
+    var errorView: some View {
+        VStack(alignment: .leading) {
+            Text("Something went wrong")
+                .font(.callout)
         }
     }
 }

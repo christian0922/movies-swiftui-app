@@ -8,20 +8,25 @@
 import SwiftUI
 
 struct MovieListRow: View {
-    @State var summary: MovieSummary
+    @State var details: MovieDetails
     var body: some View {
         VStack(alignment: .leading) {
-            Image(summary.image)
-                .resizable()
-                .aspectRatio(contentMode: .fit)
+            AsyncImage(url: details.posterUrl) { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+            } placeholder: {
+                Color.clear
+            }
             VStack(alignment: .leading) {
-                Text(summary.title)
+                Text(details.title)
                     .font(.headline)
                     .fontWeight(.black)
-                Text("\(summary.budget)")
+                Text(details.budgetString)
                     .font(.caption)
+                    .fontWeight(.black)
             }
-            .padding([.leading, .trailing])
+            .padding([.leading, .trailing, .bottom])
         }
         .overlay(
             RoundedRectangle(cornerRadius: 10)
@@ -32,6 +37,7 @@ struct MovieListRow: View {
                               opacity: 0.1),
                         lineWidth: 1)
         )
+        .shadow(color: Color.gray, radius: 10, x: 5, y: 5)
         .frame(minWidth: 0,
                maxWidth: .infinity,
                minHeight: 0,
@@ -39,13 +45,14 @@ struct MovieListRow: View {
                alignment: .topLeading)
         .cornerRadius(10)
         .listRowBackground(Color.clear)
-        // TODO: Change hardcoded data
-        .background(NavigationLink("", destination: MovieDetailsView()))
+        .background(
+            NavigationLink("", destination: MovieDetailsView(details: details))
+        )
     }
 }
 
 struct MovieListRow_Previews: PreviewProvider {
     static var previews: some View {
-        MovieListRow(summary: MovieSummary(id: 0, title: "title", image: "image", budget: 5000))
+        MovieListRow(details: MovieDetails(id: 0, title: "title", budget: 5000, overview: "overview", releaseDate: "releaseDate", backdropPath: nil, posterPath: nil))
     }
 }

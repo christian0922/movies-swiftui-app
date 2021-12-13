@@ -12,10 +12,9 @@ import Swinject
 struct MoviesApp: App {
     let container = Container()
     init() {
-        print("Colors application is starting up. App initialiser.")
         AppContainer.shared.container = container
         let assembler = Assembler(container: container)
-        assembler.apply(assemblies: [ViewModelAssembly()])
+        assembler.apply(assemblies: [ServiceAssembly(), ViewModelAssembly()])
     }
     
     var body: some Scene {

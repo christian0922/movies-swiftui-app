@@ -13,9 +13,5 @@ struct ViewModelAssembly: Assembly {
         container.register(BaseMovieListViewModel.self) { _ in
             return MovieListViewModel()
         }
-        
-        container.register(BaseMovieDetailsViewModel.self) { _ in
-            return MovieDetailsViewModel()
-        }
     }
 }
